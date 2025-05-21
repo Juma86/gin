@@ -1,0 +1,29 @@
+Example:
+	muc -n -o myfiles.muc -i foo.txt bar.txt baz.dat      # Create new myfiles.muc from files foo.txt, bar.txt & baz.dat.
+	muc -d -i myfiles.muc                                 # Extract files from myfiles.muc to current working directory.
+	muc -l -i myfiles.muc                                 # List all files within myfiles.muc
+
+Control-arguments:
+
+	--new-muc               / -n       # Create muc from INFILE(S), write to OUTFILE(S)
+	--dissolve-muc          / -d       # Dissolve muc from INFILE(S), write to OUTFILE(S) directories
+	--dissolve-intact       / -dI      # Dissolve a muc file, leaving pre-existing files on-disk intact
+	--dissolve-replace      / -dR      # Dissolve a muc file, replacing pre-existing files on-disk
+	--append-files          / -a       # Append INFILE(S) to muc specified as OUTFILE(S)
+	--append-intact         / -aI      # Append files, do not replace files that already exist in archive
+	--append-replace        / -aR      # Append files, replace files that already exist in archive
+	--remove-files          / -r       # Remove INFILE(S) file-paths from OUTFILE(S) muc archive
+	--contains-files        / -c       # Check wether INFILE(S) are contained within OUTFILE(S) muc.
+	--cat-subfiles          / -cC      # Write contents of file of name INFILE(S) from muc OUTFILE(S). @@@@@ NOT YET IMPLEMENTED!!!
+	--merge-mucs            / -m       # Merge INFILE(S) muc, write to OUTFILE(S) mucs.
+	--list-files            / -l       # List files within INFILE(S) mucs, write output to OUTFILE(S) if specified.
+
+I/O-arguments:
+
+	--in-file		/ -i       # Specify an INFILE
+	--out-file		/ -o	   # Spacify an OUTFILE
+
+Runtime-output-formatting:
+	--quiet             / -q        # Suppress all but expected output to stdout.    @@@@@ CURRENTLY FUNCTIONS AS --silent // -qS
+	--silent            / -qS       # Suppress ALL output to stdout.                 @@@@@ NOT YET IMPLEMENTED!!!
+	--embed             / -qE       # Stable, non-human-readable binary form logging @@@@@ NOT YET IMPLEMENTED!!!

@@ -1,0 +1,89 @@
+#!/bin/bash
+
+PLATFORM=$1
+CLEAN=$1
+ASYNC=$2
+DO_INSTALL=$3
+PREPARE_SYSTEM=$4
+
+set -e
+
+function PerformAsyncCompile() {
+    duration=$({ time $(Tool/compile/Builder/${PLATFORM}/${file##*/}.sh &> Temp/Log/${file##*/}.sh.log) ; } |& grep real | sed -E 's/[^0-9\.]+//g' | tr -d '\n' | (cat && echo " * 1000") | bc)
+    echo "[$duration] Compiled -> ${file##*/} "
+}
+
+if [ "$CLEAN" = "clean" ]; then
+    rm -fr Build
+    rm -fr Temp
+
+    exit 0
+fi
+
+if [ "$PREPARE_SYSTEM" = "prepare" ]; then
+    bash Tool/setup-system
+fi ;
+
+echo "Ensuring existence of crucial build directories ..."
+mkdir -p Temp/Object/
+mkdir -p Build/
+if [ "$ASYNC" = "async" ]; then
+    mkdir -p Temp/Log/
+fi
+
+echo "Cleaning build directory..."
+rm -fr ./Build/*
+echo "Cleaning Logs..."
+rm -fr Temp/Log/*
+echo "Cleaning Objects..."
+rm -fr Temp/Object/*
+
+for file in $(find Source/ | grep -v header/ | grep -v lib/ ); do
+    if [ -f "$file" ] && [[ "$file" != "Source/[]"* ]]; then
+        if [ "$ASYNC" = "async" ]
+        then PerformAsyncCompile & 
+        else sh "Builder/${PLATFORM}/${file##*/}.sh"
+        fi
+    fi 
+done
+
+if [ "$ASYNC" = "async" ]; then
+    wait
+
+    echo -e "\nCompiling finished, displaying log info:"
+
+    wc -l Temp/Log/*
+
+    echo -ne "\nContinue? (y/N) -> " ; read res
+    if [ "$res" != "y" ] ; then exit 0 ; fi
+fi
+
+echo "Linking..."
+
+g++ Temp/Object/* -o Build/gin -no-pie -lssh -lyaml-cpp -lx86simdsortcpp -lmuc -lsimdutf
+
+#echo "Compressing binary..."
+#gzexe Build/gin ; rm Build/gin~
+
+echo "Copying build resources..."
+cp -r Resources/* Build/
+
+echo -e "\nCompilation finished!\n\r\tLocate result in Build/"
+
+if [ "$DO_INSTALL" = "install"  ]; then
+
+    mkdir -p /var/lib/gin/packages/
+    mkdir -p /var/cache/gin/dl-package-cache/
+    mkdir -p /etc/gin/net/
+
+    install Build/gin /usr/bin/gin
+    muc --quiet --embed -cC -i gin.toml  -o Build/installation_resources.muc > /etc/gin/gin.toml
+    muc --quiet --embed -cC -i hosts.dbr -o Build/installation_resources.muc > /etc/gin/net/hosts.dbr
+
+    echo "Installation (hopefully) complete!"
+    echo "    Why don't you try some sample commands to check? e.g."
+    echo "        sudo gin -SQ chrome -> Search for a package"
+    echo "        sudo gin -dicp bpkg -> Download & Install a package & clean-up"
+    echo "        sudo gin -H         -> Edit the available hosts"
+    echo "        sudo gin -rpn bpkg  -> Remove an already installed package"
+fi

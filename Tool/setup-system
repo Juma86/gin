@@ -1,0 +1,31 @@
+#!/bin/bash
+
+sudo apt-get update && sudo apt-get upgrade -y --fix-missing
+
+sudo apt install -y g++ libssh-dev libtomlplusplus-dev git cmake meson libyaml-cpp-dev brotli sshpass
+
+mkdir -p Temp/setup-system/ && cd Temp/setup-system
+
+git clone https://github.com/intel/x86-simd-sort.git
+cd x86-simd-sort
+meson setup --buildtype release builddir && cd builddir
+meson compile
+sudo meson install
+cd ../../../../
+
+cd Temp/setup-system
+git clone --recursive https://github.com/simdutf/simdutf.git
+cd simdutf
+mkdir -p ./build && cd build
+cmake .. && make -j$(($(nproc --all)+4)) && sudo make install
+cd ../../../../
+
+cd External/muc/
+sudo ./build-install.bash
+
+cd ../../
+
+sudo echo "/usr/local/lib/x86_64-linux-gnu" >> /etc/ld.so.conf.d/libx86simdsort.conf
+sudo ldconfig
+
+exit 0

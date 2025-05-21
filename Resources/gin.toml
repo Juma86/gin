@@ -1,0 +1,16 @@
+
+title = "gin configuration"
+
+[meta]
+version = "0.6.0"
+kernel = "linux"
+architecture = "x86_64"
+
+[config]
+hosts = "/etc/gin/net/hosts.dbr"
+
+[cache]
+downloads = "/var/cache/gin/dl-package-cache"
+
+[persistent]
+package_registry = "/var/lib/gin/packages"
