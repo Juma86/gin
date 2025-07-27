@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 sudo apt-get update && sudo apt-get upgrade -y --fix-missing
 
 sudo apt install -y g++ libssh-dev libtomlplusplus-dev git cmake meson libyaml-cpp-dev brotli sshpass
@@ -21,7 +23,7 @@ cmake .. && make -j$(($(nproc --all)+4)) && sudo make install
 cd ../../../../
 
 cd External/muc/
-sudo ./build-install.bash
+sudo bash ./build-install.bash
 
 cd ../../
 

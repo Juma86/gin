@@ -9,7 +9,7 @@ PREPARE_SYSTEM=$4
 set -e
 
 function PerformAsyncCompile() {
-    duration=$({ time $(Tool/compile/Builder/${PLATFORM}/${file##*/}.sh &> Temp/Log/${file##*/}.sh.log) ; } |& grep real | sed -E 's/[^0-9\.]+//g' | tr -d '\n' | (cat && echo " * 1000") | bc)
+    duration=$({ time $(bash Tool/compile/Builder/${PLATFORM}/${file##*/}.sh &> Temp/Log/${file##*/}.sh.log) ; } |& grep real | sed -E 's/[^0-9\.]+//g' | tr -d '\n' | (cat && echo " * 1000") | bc)
     echo "[$duration] Compiled -> ${file##*/} "
 }
 

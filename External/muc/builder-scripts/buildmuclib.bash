@@ -1,6 +1,8 @@
 #!/bin/bash
 #g++ -shared -fPIC -Wl,-soname,libmuc.so -Wall -Wextra -Werror ./muclib.cxx -o ./libmuc.so
 
+set -e
+
 echo "Building muc shared object ..."
 
 # build muc library object

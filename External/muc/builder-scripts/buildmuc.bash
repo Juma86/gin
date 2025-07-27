@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 echo "Building main executable ..."
 
 # build main object
