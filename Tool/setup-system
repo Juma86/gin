@@ -4,7 +4,7 @@ set -e
 
 sudo apt-get update && sudo apt-get upgrade -y --fix-missing
 
-sudo apt install -y g++ libssh-dev libtomlplusplus-dev git cmake meson libyaml-cpp-dev brotli sshpass
+sudo apt install -y g++ libssh-dev libtomlplusplus-dev git cmake meson libyaml-cpp-dev brotli sshpass bc
 
 mkdir -p Temp/setup-system/ && cd Temp/setup-system
 
