@@ -25,7 +25,7 @@ int main(int argc, char ** argv) {
           : ec == loadginconfig_parseerror::EC_MEM_ALLOC_FAIL    ? "Failed to allocate memory to store file data."
           : ec == loadginconfig_parseerror::EC_TOML_PARSE_FAIL   ? "Failed to parse toml data within file."
           : ec == loadginconfig_parseerror::EC_FILE_NOT_FOUND    ? "Configuration file not found."
-          : "Error not supported."
+          : "Error not supported." // Should not be reached
         ) << std::endl;
 
         return EXIT_FAILURE;
