@@ -1,0 +1,86 @@
+#!/bin/bash
+
+if [ "$(ps -p $$ -o comm=)" = "sh" ]
+then
+    # echo "This script does not support sh. Re-invoking with bash..."
+    /bin/bash $0 $@
+    exit $?
+fi
+
+source .3bs/*essential.sh
+
+# If we are in dev-test mode, enable debug and shift args
+devtoggle=""
+if [ "$1" = "dev-test" ]; then
+    devtoggle="$1"
+    shift
+    set -xe
+else
+    set -e
+fi
+
+# Build the project
+_Build() {
+    echo "Building project..."
+    echo "Arguments: $@"
+    # Build logic here
+}
+
+# Run user-defined unit-tests
+_Test() {
+    echo "Running tests..."
+    echo "Arguments: $@"
+    # Test logic here
+}
+
+# Show help information
+_Help() {
+    echo "Available commands:"
+    echo "  build               Build the project"
+    echo "  test                Run tests"
+    echo "  help                Show this help message"
+    echo "  clean               Clean build artifacts"
+    echo "  update              Update dependencies"
+    echo "  version             Show version information"
+    echo "  get-dependencies    Get project dependencies"
+}
+
+# Show version information
+_Version() {
+    echo "Project version: 0.1.0"
+}
+
+# Don't allow calling internal functions or empty commands
+if [ "$1:0:1" == "_" ] || [ "$1" == "" ]; then
+    echo "Command not found"
+    exit 1
+fi
+
+# Translate CLI arg to function call
+case $1 in
+    "build" )
+        shift && _Build $@
+        ;;
+    "test" )
+        shift && _Test $@
+        ;;
+    "help" )
+        shift && _Help $@
+        ;;
+    "clean" )
+        shift && .3bs/Tool/Clean/Clean $devtoggle $@
+        ;;
+    "update" )
+        shift && .3bs/Tool/Update/Update $devtoggle $@
+        ;;
+    "version" )
+        shift && _Version $@
+        ;;
+    "GetDependency" )
+        shift && .3bs/Tool/GetDependency/GetDependency $devtoggle $@
+        ;;
+    * )
+        _DisplayError "Command not found"
+        exit 1
+        ;;
+esac

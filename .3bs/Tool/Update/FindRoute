@@ -1,0 +1,47 @@
+#!/bin/bash
+
+source .3bs/*essential.sh
+
+here="`readlink -f $(dirname ${BASH_SOURCE[0]})`"
+this="`basename ${BASH_SOURCE[0]} .util.sh`"
+
+set -e
+
+if [ -n "$1" ]; then
+    repopath="$1"
+else
+    repopath="."
+fi
+
+hash="$(cat .3bs/Asset/current.ver)"
+
+children="$(git -C "$repopath" rev-list --all --ancestry-path $hash..HEAD)"
+significant="$(git -C "$repopath" show-ref --hash)"
+
+update_paths="$(comm -12 \
+    <(echo "$children" | sort) \
+    <(echo "$significant" | sort)\
+)"
+
+annotated_paths="$(echo $update_paths | git name-rev --annotate-stdin | nl -w2 -s' -> ')"
+
+format() {
+    echo "$1" | sed 's/(/\| /g;s|/[^| ]*/|/|g;s|[^| ]*/||g;s/)//g'
+}
+
+if [ -z "$update_paths" ]; then
+    _DisplayInfo "No updates available" | tee /dev/tty > /dev/null
+    exit 0
+fi
+
+{
+    format "$annotated_paths"
+
+    _DisplayInfo "Which branch do you wish to update to: " --no-newline
+    read -r answer
+    branch=${update_paths[answer-1]}
+
+    _DisplayTrace "selecting branch: $branch"   # log to stderr so it doesn't go to caller
+
+    echo "$branch"
+} | tee /dev/tty | tail -n1
