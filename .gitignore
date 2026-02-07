@@ -3,3 +3,9 @@
 Temp/
 Build/
 Dependency/
+
+# Editor related files
+.vscode/
+
+# OS related files
+.DS_store/
